@@ -1,4 +1,4 @@
-== Spring Cloud Scheduler image:https://build.spring.io/plugins/servlet/wittified/build-status/SCD-SCHEDMASTER[Build Status, link=https://build.spring.io/browse/SCD-SCHEDMASTER] image:https://badge.waffle.io/spring-cloud/spring-cloud-scheduler.svg?label=ready&title=Ready[Stories Ready, link=http://waffle.io/spring-cloud/spring-cloud-scheduler] image:https://badge.waffle.io/spring-cloud/spring-cloud-scheduler.svg?label=In%20Progress&title=In%20Progress[Stories In Progress, link=http://waffle.io/spring-cloud/spring-cloud-scheduler]
+== Spring Cloud Scheduler image:https://build.spring.io/plugins/servlet/wittified/build-status/SCD-SCHED[Build Status, link=https://build.spring.io/browse/SCD-SCHED] image:https://badge.waffle.io/spring-cloud/spring-cloud-scheduler.svg?label=ready&title=Ready[Stories Ready, link=http://waffle.io/spring-cloud/spring-cloud-scheduler] image:https://badge.waffle.io/spring-cloud/spring-cloud-scheduler.svg?label=In%20Progress&title=In%20Progress[Stories In Progress, link=http://waffle.io/spring-cloud/spring-cloud-scheduler]
 
 The Spring Cloud Scheduler project defines an SPI for scheduling short lived tasks.
 
