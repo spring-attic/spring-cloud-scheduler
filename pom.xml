@@ -7,7 +7,7 @@
 	<groupId>org.springframework.cloud</groupId>
 	<packaging>pom</packaging>
 
-	<name>spring-cloud-deployer-parent</name>
+	<name>spring-cloud-scheduler-parent</name>
 	<description>Spring Cloud Scheduler</description>
 
 	<parent>

@@ -1,0 +1,18 @@
+== Spring Cloud Scheduler image:https://build.spring.io/plugins/servlet/wittified/build-status/SCD-SCHEDMASTER[Build Status, link=https://build.spring.io/browse/SCD-SCHEDMASTER] image:https://badge.waffle.io/spring-cloud/spring-cloud-scheduler.svg?label=ready&title=Ready[Stories Ready, link=http://waffle.io/spring-cloud/spring-cloud-scheduler] image:https://badge.waffle.io/spring-cloud/spring-cloud-scheduler.svg?label=In%20Progress&title=In%20Progress[Stories In Progress, link=http://waffle.io/spring-cloud/spring-cloud-scheduler]
+
+The Spring Cloud Scheduler project defines an SPI for scheduling short lived tasks.
+
+== Implementations
+
+This scheduler SPI has been implemented for several runtime environments. Here are the github locations:
+
+* https://github.com/spring-cloud/spring-cloud-scheduler-quartz[Quartz]
+* https://github.com/spring-cloud/spring-cloud-scheduler-cloudfoundry[Cloud Foundry]
+
+=== Building
+
+Clone the repo and type
+
+----
+$ ./mvnw clean install
+----
