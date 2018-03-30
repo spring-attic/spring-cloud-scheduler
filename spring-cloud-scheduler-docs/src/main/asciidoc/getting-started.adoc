@@ -1,0 +1,171 @@
+[[getting-started]]
+= Getting started
+
+[[partintro]]
+--
+If you are just getting started with Spring Cloud Scheduler, you should read this section.
+Here, we answer the basic "`what?`", "`how?`", and "`why?`" questions. We start with a
+gentle introduction to Spring Cloud Schduler SPI. We then cover how to create the
+foundation for your Spring Cloud Scheduler Implementation.
+--
+
+[[getting-started-introducing-spring-cloud-scheduler]]
+== Introducing Spring Cloud Scheduler SPI
+
+Spring Cloud Scheduler SPI provides a simple interface to schedule Task
+Executions based on a expression while hiding the implementation specific
+setup of the environment (Quartz, PCF Scheduler, etc).  A user is allowed to
+create a Schedule that expresses what task definition they want to launch and when.
+
+A user is allowed to create multiple schedules for a single task definition.
+Users have the ability to execute the following actions against scheduling:
+
+* schedule - Create a Schedule
+* list - Retrieve a list of Schedules
+* list by definition - Retrieve a list of Schedules that use a specific definition
+* unschedule - Delete a Schedule. Prevents a task from being executed in the future
+for this schedule, but does not stop currently running scheduled tasks for this schedule.
+
+When the user creates a Schedule, the Spring Cloud Scheduler implementation will
+register the schedule with implementation’s provided scheduler.
+
+
+[[getting-started-system-requirements]]
+== System Requirements
+
+You need to have Java installed (Java 8 or better). To build, you need to have Maven
+installed as well.
+
+[[getting-started-developing-first-scheduler-implementation]]
+== Developing Your First Spring Cloud Scheduler Implementation
+
+Before we begin, open a terminal to check that you have valid versions of Java and Maven
+installed, as shown in the following two listings:
+
+[source]
+$ java -version
+java version "1.8.0_31"
+Java(TM) SE Runtime Environment (build 1.8.0_31-b13)
+Java HotSpot(TM) 64-Bit Server VM (build 25.31-b07, mixed mode)
+
+[source]
+$ mvn -v
+Apache Maven 3.2.3 (33f8c3e1027c3ddde99d3cdebad2656a31e8fdf4; 2014-08-11T15:58:10-05:00)
+Maven home: /usr/local/Cellar/maven/3.2.3/libexec
+Java version: 1.8.0_31, vendor: Oracle Corporation
+
+NOTE: This sample needs to be created in its own folder. Subsequent instructions assume
+you have created a suitable folder and that it is your "`current directory.`"
+
+[[getting-started-creating-the-pom]]
+=== Creating the POM
+
+We need to start by creating a Maven `pom.xml` file. The `pom.xml` file contains the
+recipe that Maven uses to build your project. To create the pom.xml file, open your
+favorite text editor and add the following:
+
+[code,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>spring-cloud-scheduler-myimpl</artifactId>
+	<version>1.0.0.BUILD-SNAPSHOT</version>
+	<groupId>org.springframework.cloud</groupId>
+	<packaging>jar</packaging>
+
+	<description>Spring Cloud - My Impl Scheduler</description>
+
+	<parent>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-scheduler-parent</artifactId>
+		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<relativePath />
+	</parent>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<spring-cloud-scheduler-spi.version>1.0.0.BUILD-SNAPSHOT</spring-cloud-scheduler-spi.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-scheduler-spi</artifactId>
+			<version>${spring-cloud-scheduler-spi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-scheduler-spi-test</artifactId>
+			<version>${spring-cloud-scheduler-spi.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+...
+
+</project>
+----
+
+Creating a `pom.xml` file with the preceding content should give you a working build. You
+can test it by running `mvn package` (for now, you can ignore the "jar will be empty - no
+content was marked for inclusion!" warning ).
+
+NOTE: At this point, you could import the project into an IDE (most modern Java IDE's
+include built-in support for Maven). For simplicity, we continue to use a plain text
+editor for this example.
+
+[[getting-started-adding-classpath-dependencies]]
+=== Writing your implementation of Spring Cloud Scheduler
+
+To start our implementation, we need to create a single Java file. Maven will
+compile the sources from src/main/java by default so you need to create that
+folder structure. Then add a file named `MySchedulerImpl.java`.
+
+[code,java]
+----
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.cloud.scheduler.spi.Schedule;
+import org.springframework.cloud.scheduler.spi.ScheduleExpression;
+import org.springframework.cloud.scheduler.spi.Scheduler;
+import org.springframework.cloud.scheduler.spi.core.ScheduleRequest;
+
+public class MySchedulerImpl implements Scheduler {
+
+	private List<Schedule> schedules = new ArrayList<>();
+
+
+	@Override
+	public Schedule schedule(ScheduleRequest scheduleRequest, ScheduleExpression expression, Map<String, String> commandLineArgs) {
+		// Your implementation here
+		return null;
+	}
+
+	@Override
+	public void unschedule(Schedule schedule) {
+		// Your implementation here
+	}
+
+	@Override
+	public List<Schedule> list(String taskDefinitionName) {
+		// Your implementation here
+		return null;
+	}
+
+	@Override
+	public List<Schedule> list() {
+		// Your implementation here
+		return null;
+	}
+
+}
+----
