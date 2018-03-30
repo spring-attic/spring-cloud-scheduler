@@ -26,6 +26,7 @@
 	<modules>
 		<module>spring-cloud-scheduler-spi</module>
 		<module>spring-cloud-scheduler-spi-test</module>
+		<module>spring-cloud-scheduler-docs</module>
 	</modules>
 
 	<dependencyManagement>
