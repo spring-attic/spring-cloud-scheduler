@@ -103,6 +103,14 @@ public class ScheduleRequest extends AppDeploymentRequest{
 		return scheduleName;
 	}
 
+	public Map<String, String> getSchedulerProperties() {
+		return schedulerProperties;
+	}
+
+	public void setSchedulerProperties(Map<String, String> schedulerProperties) {
+		this.schedulerProperties = schedulerProperties;
+	}
+
 	@Override
 	public String toString(){
 		return new ToStringCreator(this)
