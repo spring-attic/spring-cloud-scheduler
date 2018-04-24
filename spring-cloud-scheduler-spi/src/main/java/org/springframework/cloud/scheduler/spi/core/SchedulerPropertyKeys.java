@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.springframework.cloud.scheduler.spi.implementation;
+package org.springframework.cloud.scheduler.spi.core;
 
 /**
  * Spring Cloud Scheduler property keys.

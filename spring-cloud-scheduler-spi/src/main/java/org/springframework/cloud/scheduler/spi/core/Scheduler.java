@@ -33,7 +33,8 @@ public interface Scheduler {
 
 	/**
 	 * Registers the {@link ScheduleRequest} to be executed based on the
-	 * cron expression provided.
+	 * cron expression provided.  If an error occurs during schedule creation
+	 * then a {@link CreateScheduleException} should be thrown.
 	 *
 	 * @param scheduleRequest A request representing a sched-uable
 	 * artifact({@link org.springframework.cloud.deployer.spi.core.AppDefinition},
@@ -42,7 +43,8 @@ public interface Scheduler {
 	void schedule(ScheduleRequest scheduleRequest);
 
 	/**
-	 *  Deletes a schedule that has been created
+	 *  Deletes a schedule that has been created.  If an error occurs during
+	 *  un-scheduling then a {@link UnScheduleException} should be thrown.
 	 *
 	 * @param scheduleName the name of the schedule to be removed.
 	 */
@@ -50,6 +52,8 @@ public interface Scheduler {
 
 	/**
 	 * List all of the Schedules associated with the provided AppDefinition.
+	 * If an error occurs during list generation then a {@link SchedulerException}
+	 * should be thrown.
 	 *
 	 * @param taskDefinitionName to retrieve {@link ScheduleInfo}s for a specified taskDefinitionName.
 	 * @return A List of {@link ScheduleInfo}s configured for the provided taskDefinitionName.
@@ -58,6 +62,8 @@ public interface Scheduler {
 
 	/**
 	 * List all of the {@link ScheduleInfo}s registered with the system.
+	 * If an error occurs during list generation then a {@link SchedulerException}
+	 * should be thrown.
 	 *
 	 * @return A List of {@link ScheduleInfo}s for the given system.
 	 */
