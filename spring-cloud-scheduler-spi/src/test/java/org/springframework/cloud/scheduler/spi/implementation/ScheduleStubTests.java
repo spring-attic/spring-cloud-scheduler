@@ -19,7 +19,7 @@ package org.springframework.cloud.scheduler.spi.implementation;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.cloud.scheduler.spi.Scheduler;
+import org.springframework.cloud.scheduler.spi.core.Scheduler;
 
 public class ScheduleStubTests {
 

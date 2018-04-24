@@ -86,17 +86,6 @@ public class ScheduleRequest extends AppDeploymentRequest{
 	}
 
 	/**
-	 * Construct an {@code AppDeploymentRequest} with no deployment properties.
-	 *
-	 * @param definition app definition
- 	 * @param schedulerProperties properties that contain scheduler specific informaton.
-	 * @param scheduleName the name associated with the schedule.
-	 */
-	public ScheduleRequest(AppDefinition definition, Map<String, String> schedulerProperties, String scheduleName, Resource resource) {
-		this(definition, schedulerProperties, null, scheduleName, resource);
-	}
-
-	/**
 	 * @see #scheduleName
 	 */
 	public String getScheduleName() {

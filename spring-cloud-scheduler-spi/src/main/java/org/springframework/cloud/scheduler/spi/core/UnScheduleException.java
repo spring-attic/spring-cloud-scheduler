@@ -14,17 +14,16 @@
  *  limitations under the License.
  */
 
-package org.springframework.cloud.scheduler.spi.implementation;
+package org.springframework.cloud.scheduler.spi.core;
 
 /**
- * Thrown when a schedule is already exists when scheduler the gets a request
- * to deploy it.
+ * Thrown when a schedule fails to be unscheduled on the scheduler infrastructure.
  *
  * @author Glenn Renfro
  */
-public class DuplicateScheduleException extends RuntimeException{
+public class UnScheduleException extends SchedulerException {
 
-	public DuplicateScheduleException(String scheduleName) {
-		super(String.format("Schedule '%s' already exists", scheduleName));
+	public UnScheduleException(String scheduleName, Throwable t) {
+		super(String.format("Failed to unschedule %s", scheduleName), t);
 	}
 }

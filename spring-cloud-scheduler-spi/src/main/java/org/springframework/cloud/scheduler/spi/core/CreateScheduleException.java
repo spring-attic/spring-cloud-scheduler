@@ -14,14 +14,14 @@
  *  limitations under the License.
  */
 
-package org.springframework.cloud.scheduler.spi.implementation;
+package org.springframework.cloud.scheduler.spi.core;
 
 /**
  * Thrown when a schedule fails to be created on the scheduler infrastructure.
  *
  * @author Glenn Renfro
  */
-public class CreateScheduleException extends RuntimeException{
+public class CreateScheduleException extends SchedulerException{
 
 	public CreateScheduleException(String scheduleName, Throwable t) {
 		super(String.format("Failed to create schedule %s",scheduleName), t);

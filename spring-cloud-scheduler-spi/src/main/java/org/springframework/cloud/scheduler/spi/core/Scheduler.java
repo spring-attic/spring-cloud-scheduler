@@ -15,11 +15,10 @@
  */
 
 
-package org.springframework.cloud.scheduler.spi;
+package org.springframework.cloud.scheduler.spi.core;
 
 import java.util.List;
 
-import org.springframework.cloud.scheduler.spi.core.ScheduleRequest;
 import org.springframework.core.io.Resource;
 
 /**

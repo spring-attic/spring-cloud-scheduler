@@ -18,8 +18,8 @@ package org.springframework.cloud.scheduler.spi.implementation;
 
 import java.util.List;
 
-import org.springframework.cloud.scheduler.spi.ScheduleInfo;
-import org.springframework.cloud.scheduler.spi.Scheduler;
+import org.springframework.cloud.scheduler.spi.core.ScheduleInfo;
+import org.springframework.cloud.scheduler.spi.core.Scheduler;
 import org.springframework.cloud.scheduler.spi.core.ScheduleRequest;
 
 /**

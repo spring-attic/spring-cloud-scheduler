@@ -14,16 +14,16 @@
  *  limitations under the License.
  */
 
-package org.springframework.cloud.scheduler.spi.implementation;
+package org.springframework.cloud.scheduler.spi.core;
 
 /**
- * Thrown when a schedule fails to be unscheduled on the scheduler infrastructure.
+ * Base Exception class for Spring Cloud Scheduler.
  *
  * @author Glenn Renfro
  */
-public class UnScheduleException extends RuntimeException {
+public class SchedulerException extends RuntimeException{
 
-	public UnScheduleException(String scheduleName, Throwable t) {
-		super(String.format("Failed to unschedule %s", scheduleName), t);
+	public SchedulerException(String exceptionMessage, Throwable t) {
+		super(String.format(exceptionMessage), t);
 	}
 }

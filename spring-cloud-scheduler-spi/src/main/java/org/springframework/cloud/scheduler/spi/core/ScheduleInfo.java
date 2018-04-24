@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.springframework.cloud.scheduler.spi;
+package org.springframework.cloud.scheduler.spi.core;
 
 import java.util.Map;
 
