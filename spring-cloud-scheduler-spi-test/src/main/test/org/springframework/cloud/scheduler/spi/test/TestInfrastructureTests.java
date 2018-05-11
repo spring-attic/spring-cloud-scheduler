@@ -44,22 +44,22 @@ public class TestInfrastructureTests extends AbstractIntegrationTests{
 
 
 	@Override
-	protected List<String> testCommandLineArgs() {
+	protected List<String> getCommandLineArgs() {
 		return null;
 	}
 
 	@Override
-	protected Map<String, String> testSchedulerProperties() {
+	protected Map<String, String> getSchedulerProperties() {
 		return null;
 	}
 
 	@Override
-	protected Map<String, String> testDeploymentProperties() {
+	protected Map<String, String> getDeploymentProperties() {
 		return null;
 	}
 
 	@Override
-	protected Map<String, String> testAppProperties() {
+	protected Map<String, String> getAppProperties() {
 		return null;
 	}
 

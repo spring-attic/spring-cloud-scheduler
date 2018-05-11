@@ -32,6 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -45,8 +46,8 @@ import org.springframework.cloud.deployer.resource.maven.MavenResource;
 import org.springframework.cloud.deployer.spi.core.AppDefinition;
 import org.springframework.cloud.scheduler.spi.core.CreateScheduleException;
 import org.springframework.cloud.scheduler.spi.core.ScheduleInfo;
-import org.springframework.cloud.scheduler.spi.core.Scheduler;
 import org.springframework.cloud.scheduler.spi.core.ScheduleRequest;
+import org.springframework.cloud.scheduler.spi.core.Scheduler;
 import org.springframework.cloud.scheduler.spi.core.SchedulerException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +58,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 import static org.springframework.cloud.scheduler.spi.test.EventuallyMatcher.eventually;
 
@@ -77,10 +77,25 @@ public abstract class AbstractIntegrationTests {
 
 	private SchedulerWrapper schedulerWrapper;
 
+	/**
+	 * Return the timeout to use for repeatedly querying that a task has been scheduled.
+	 * Default value is one minute, being queried every 5 seconds.
+	 */
+	private Timeout scheduleTimeout = new Timeout(12, 5000);
+
+	/**
+	 * Return the timeout to use for repeatedly querying whether a task has been unscheduled.
+	 * Default value is one minute, being queried every 5 seconds.
+	 */
+	private Timeout unScheduleTimeout = new Timeout(12, 5000);
+
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Rule
 	public TestName name = new TestName();
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@After
 	public void tearDown() {
@@ -111,25 +126,25 @@ public abstract class AbstractIntegrationTests {
 	 * To be implemented by subclasses, which should return the commandLineArgs that
 	 * will be used for the tests.
 	 */
-	protected abstract List<String> testCommandLineArgs();
+	protected abstract List<String> getCommandLineArgs();
 
 	/**
 	 * To be implemented by subclasses, which should return the schedulerProperties that
 	 * will be used for the tests.
 	 */
-	protected abstract Map<String, String> testSchedulerProperties();
+	protected abstract Map<String, String> getSchedulerProperties();
 
 	/**
 	 * To be implemented by subclasses, which should return the deploymentProperties that
 	 * will be used for the tests.
 	 */
-	protected abstract Map<String, String> testDeploymentProperties();
+	protected abstract Map<String, String> getDeploymentProperties();
 
 	/**
 	 * To be implemented by subclasses, which should return the appProperties that
 	 * will be used for the tests.
 	 */
-	protected abstract Map<String, String> testAppProperties();
+	protected abstract Map<String, String> getAppProperties();
 
 	@Before
 	public void wrapScheduler() {
@@ -145,42 +160,32 @@ public abstract class AbstractIntegrationTests {
 	public void testUnschedule() {
 		ScheduleInfo scheduleInfo = createAndVerifySchedule();
 		unschedule(scheduleInfo.getScheduleName());
+		assertEquals(0, taskScheduler().list().size());
 	}
 
 	@Test
 	public void testDuplicateSchedule() {
-		boolean exceptionFired = false;
 		ScheduleRequest request = createScheduleRequest();
-		schedule(request, request.getDefinition());
+		taskScheduler().schedule(request);
 		ScheduleInfo scheduleInfo = new ScheduleInfo();
 		scheduleInfo.setScheduleName(request.getScheduleName());
 
+		this.expectedException.expect(CreateScheduleException.class);
+		this.expectedException.expectMessage(String.format("Failed to create schedule %s", request.getScheduleName()));
+
 		verifySchedule(scheduleInfo);
-		try {
-			schedule(request, request.getDefinition());
-		}
-		catch (CreateScheduleException cse) {
-			assertEquals("Invalid exception message", String.format("Failed to create schedule %s", request.getScheduleName()), cse.getMessage());
-			exceptionFired = true;
-		}
-		assertTrue(exceptionFired);
+		taskScheduler().schedule(request);
 	}
 
 	@Test
 	public void testUnScheduleNoEntry() {
-		boolean exceptionFired = false;
 		String definitionName = randomName();
 		String scheduleName = "ScheduleName_" + definitionName;
 
-		try {
-			unschedule(scheduleName);
-		}catch (SchedulerException cse) {
-			assertEquals("Invalid exception message",
-					String.format("Failed to unschedule, schedule %s does not exist.",
-							scheduleName), cse.getMessage());
-			exceptionFired = true;
-		}
-		assertTrue(exceptionFired);
+		this.expectedException.expect(SchedulerException.class);
+		this.expectedException.expectMessage(String.format("Failed to unschedule, schedule %s does not exist.",
+				scheduleName));
+		unschedule(scheduleName);
 	}
 
 	@Test
@@ -189,7 +194,7 @@ public abstract class AbstractIntegrationTests {
 		String scheduleName = "Schedule_Name " + definitionName;
 		for (int i = 0; i < 4; i++) {
 			ScheduleRequest request = createScheduleRequest(scheduleName + i, definitionName + i);
-			schedule(request, request.getDefinition());
+			taskScheduler().schedule(request);
 		}
 		List<ScheduleInfo> scheduleInfos = taskScheduler().list();
 
@@ -204,18 +209,36 @@ public abstract class AbstractIntegrationTests {
 		String scheduleName = "Schedule_Name " + definitionName;
 		for (int i = 0; i < 4; i++) {
 			ScheduleRequest request = createScheduleRequest(scheduleName + i, definitionName + i%2);
-			schedule(request, request.getDefinition());
+			taskScheduler().schedule(request);
 		}
-		Timeout timeout = scheduleTimeout();
 		ScheduleInfo scheduleInfo = new ScheduleInfo();
 		scheduleInfo.setScheduleName(scheduleName+0);
 		scheduleInfo.setTaskDefinitionName(definitionName+0);
-		assertThat(scheduleInfo, eventually(hasSpecifiedSchedulesByTaskDefinitionName(taskScheduler().list(definitionName+0), scheduleInfo.getTaskDefinitionName(), 2), timeout.maxAttempts, timeout.pause));
+		assertThat(scheduleInfo, eventually(
+				hasSpecifiedSchedulesByTaskDefinitionName(taskScheduler().list(definitionName+0),
+						scheduleInfo.getTaskDefinitionName(), 2),
+				this.scheduleTimeout.maxAttempts, this.scheduleTimeout.pause));
+	}
+
+	public Timeout getScheduleTimeout() {
+		return scheduleTimeout;
+	}
+
+	public void setScheduleTimeout(Timeout scheduleTimeout) {
+		this.scheduleTimeout = scheduleTimeout;
+	}
+
+	public Timeout getUnScheduleTimeout() {
+		return unScheduleTimeout;
+	}
+
+	public void setUnScheduleTimeout(Timeout unScheduleTimeout) {
+		this.unScheduleTimeout = unScheduleTimeout;
 	}
 
 	private ScheduleInfo createAndVerifySchedule() {
 		ScheduleRequest request = createScheduleRequest();
-		schedule(request, request.getDefinition());
+		taskScheduler().schedule(request);
 		ScheduleInfo scheduleInfo = new ScheduleInfo();
 		scheduleInfo.setScheduleName(request.getScheduleName());
 		verifySchedule(scheduleInfo);
@@ -229,61 +252,32 @@ public abstract class AbstractIntegrationTests {
 	}
 
 	private ScheduleRequest createScheduleRequest(String scheduleName, String definitionName) {
-		AppDefinition definition = new AppDefinition(definitionName, testAppProperties());
-		return new ScheduleRequest(definition, testSchedulerProperties(), testDeploymentProperties(), testCommandLineArgs(), scheduleName, testApplication());
+		AppDefinition definition = new AppDefinition(definitionName, getAppProperties());
+		return new ScheduleRequest(definition, getSchedulerProperties(), getDeploymentProperties(), getCommandLineArgs(), scheduleName, testApplication());
 	}
 
 	private void verifySchedule(ScheduleInfo scheduleInfo) {
-		Timeout timeout = scheduleTimeout();
-		assertThat(scheduleInfo, eventually(hasSpecifiedSchedule(taskScheduler().list(), scheduleInfo.getScheduleName()), timeout.maxAttempts, timeout.pause));
-	}
-
-	private  void schedule(ScheduleRequest request, AppDefinition appDefinition) {
-		log.info("Scheduling {}...", request.getScheduleName());
-		taskScheduler().schedule(request);
-
+		assertThat(scheduleInfo, eventually(hasSpecifiedSchedule(taskScheduler().list(),
+				scheduleInfo.getScheduleName()), this.scheduleTimeout.maxAttempts,
+				this.scheduleTimeout.pause));
 	}
 
 	private void unschedule(String scheduleName) {
 		log.info("unscheduling {}...", scheduleName);
 
-		Timeout timeout = unscheduleTimeout();
 		taskScheduler().unschedule(scheduleName);
 
 		ScheduleInfo scheduleInfo = new ScheduleInfo();
 		scheduleInfo.setScheduleName(scheduleName);
-		assertThat(scheduleInfo, eventually(specifiedScheduleNotPresent(taskScheduler().list(), scheduleName), timeout.maxAttempts, timeout.pause));
+		assertThat(scheduleInfo, eventually(specifiedScheduleNotPresent(
+				taskScheduler().list(), scheduleName),
+				this.unScheduleTimeout.maxAttempts, this.unScheduleTimeout.pause));
 
 	}
 
 	protected String randomName() {
 		return name.getMethodName() + "-" + UUID.randomUUID().toString();
 	}
-
-	/**
-	 * Return the timeout to use for repeatedly querying that a task has been scheduled.
-	 * Default value is one minute, being queried every 5 seconds.
-	 */
-	protected Timeout scheduleTimeout() {
-		return new Timeout(12, 5000);
-	}
-
-	/**
-	 * Return the timeout to use for repeatedly querying whether a task has been unscheduled.
-	 * Default value is one minute, being queried every 5 seconds.
-	 */
-	protected Timeout unscheduleTimeout() {
-		return new Timeout(12, 5000);
-	}
-
-	/**
-	 * Return the time to wait between reusing scheduler requests. This could be necessary to give
-	 * some platforms time to clean up after unscheduling.
-	 */
-	protected int redeploymentPause() {
-		return 0;
-	}
-
 
 	/**
 	 * A Hamcrest Matcher that queries the schedule list for a schedule name.
