@@ -102,7 +102,7 @@ public abstract class AbstractIntegrationTests {
 		List<ScheduleRequest> scheduleRequests = new ArrayList<>(schedulerWrapper.getScheduledTasks().values());
 
 		for (ScheduleRequest scheduleRequest : scheduleRequests) {
-			unschedule(scheduleRequest.getScheduleName());
+			unscheduleTestSchedule(scheduleRequest.getScheduleName());
 		}
 
 	}
@@ -158,9 +158,10 @@ public abstract class AbstractIntegrationTests {
 
 	@Test
 	public void testUnschedule() {
+		int initialSize = taskScheduler().list().size();
 		ScheduleInfo scheduleInfo = createAndVerifySchedule();
-		unschedule(scheduleInfo.getScheduleName());
-		assertEquals(0, taskScheduler().list().size());
+		unscheduleTestSchedule(scheduleInfo.getScheduleName());
+		assertEquals(0, taskScheduler().list().size() - initialSize);
 	}
 
 	@Test
@@ -185,7 +186,7 @@ public abstract class AbstractIntegrationTests {
 		this.expectedException.expect(SchedulerException.class);
 		this.expectedException.expectMessage(String.format("Failed to unschedule, schedule %s does not exist.",
 				scheduleName));
-		unschedule(scheduleName);
+		unscheduleTestSchedule(scheduleName);
 	}
 
 	@Test
@@ -262,7 +263,7 @@ public abstract class AbstractIntegrationTests {
 				this.scheduleTimeout.pause));
 	}
 
-	private void unschedule(String scheduleName) {
+	private void unscheduleTestSchedule(String scheduleName) {
 		log.info("unscheduling {}...", scheduleName);
 
 		taskScheduler().unschedule(scheduleName);
