@@ -28,6 +28,9 @@ import org.springframework.cloud.scheduler.spi.core.ScheduleRequest;
 import org.springframework.cloud.scheduler.spi.core.SchedulerException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 public class TestInfrastructureTests extends AbstractIntegrationTests{
 
@@ -66,7 +69,6 @@ public class TestInfrastructureTests extends AbstractIntegrationTests{
 	public static class TestSchedulerImpl implements Scheduler {
 
 		private List<ScheduleInfo> schedules = new ArrayList<>();
-
 
 		@Override
 		public void schedule(ScheduleRequest scheduleRequest) {
@@ -114,6 +116,25 @@ public class TestInfrastructureTests extends AbstractIntegrationTests{
 		@Override
 		public List<ScheduleInfo> list() {
 			return this.schedules;
+		}
+
+		@Override
+		public Page<ScheduleInfo> list(Pageable pageable) {
+			List<ScheduleInfo> resultSchedules = new ArrayList<>();
+			for(int i = 0; i < pageable.getPageSize(); i++) {
+				resultSchedules.add(this.schedules.get(i));
+			}
+			return new PageImpl<>(resultSchedules, pageable, this.schedules.size());
+		}
+
+		@Override
+		public Page<ScheduleInfo> list(Pageable pageable, String taskDefinitionName) {
+			List<ScheduleInfo> filteredSchedules = list(taskDefinitionName);
+			List<ScheduleInfo> resultSchedules = new ArrayList<>();
+			for (int i = 0 ;i < pageable.getPageSize(); i++) {
+				resultSchedules.add(filteredSchedules.get(i));
+			}
+			return new PageImpl<>(resultSchedules, pageable, filteredSchedules.size());
 		}
 	}
 }

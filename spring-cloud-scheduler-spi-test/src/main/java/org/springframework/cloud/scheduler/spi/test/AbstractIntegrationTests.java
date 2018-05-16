@@ -53,6 +53,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -71,6 +75,8 @@ import static org.springframework.cloud.scheduler.spi.test.EventuallyMatcher.eve
 @SpringBootTest(webEnvironment = NONE)
 @ContextConfiguration(classes = AbstractIntegrationTests.Config.class)
 public abstract class AbstractIntegrationTests {
+
+	private static int LIST_SIZE = 4;
 
 	@Autowired
 	protected MavenProperties mavenProperties;
@@ -104,7 +110,6 @@ public abstract class AbstractIntegrationTests {
 		for (ScheduleRequest scheduleRequest : scheduleRequests) {
 			unscheduleTestSchedule(scheduleRequest.getScheduleName());
 		}
-
 	}
 
 	/**
@@ -193,7 +198,7 @@ public abstract class AbstractIntegrationTests {
 	public void testMultipleSchedule() {
 		String definitionName = randomName();
 		String scheduleName = "Schedule_Name " + definitionName;
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < LIST_SIZE; i++) {
 			ScheduleRequest request = createScheduleRequest(scheduleName + i, definitionName + i);
 			taskScheduler().schedule(request);
 		}
@@ -205,10 +210,28 @@ public abstract class AbstractIntegrationTests {
 	}
 
 	@Test
+	public void testMultipleSchedulePaginated() {
+		String definitionName = randomName();
+		String scheduleName = "Schedule_Name " + definitionName;
+		for (int i = 0; i < 2; i++) {
+			ScheduleRequest request = createScheduleRequest(scheduleName + i, definitionName + i);
+			taskScheduler().schedule(request);
+		}
+
+		Page<ScheduleInfo> pagedSchedules = taskScheduler().list(PageRequest.of(0,2));
+		assertEquals(LIST_SIZE, pagedSchedules.getTotalElements());
+		assertEquals(2, pagedSchedules.getTotalPages());
+		assertEquals(2, pagedSchedules.getContent().size());
+		pagedSchedules.stream().map(
+				scheduleInfo -> {verifySchedule(scheduleInfo);
+				return scheduleInfo;});
+	}
+
+	@Test
 	public void testListFilter() {
 		String definitionName = randomName();
 		String scheduleName = "Schedule_Name " + definitionName;
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < LIST_SIZE; i++) {
 			ScheduleRequest request = createScheduleRequest(scheduleName + i, definitionName + i%2);
 			taskScheduler().schedule(request);
 		}
@@ -221,8 +244,26 @@ public abstract class AbstractIntegrationTests {
 				this.scheduleTimeout.maxAttempts, this.scheduleTimeout.pause));
 	}
 
+	@Test
+	public void testListFilterPaginated() {
+		String definitionName = randomName();
+		String scheduleName = "Schedule_Name " + definitionName;
+		for (int i = 0; i < LIST_SIZE; i++) {
+			ScheduleRequest request = createScheduleRequest(scheduleName + i, definitionName + i%2);
+			taskScheduler().schedule(request);
+		}
+		ScheduleInfo scheduleInfo = new ScheduleInfo();
+		scheduleInfo.setScheduleName(scheduleName+0);
+		scheduleInfo.setTaskDefinitionName(definitionName+0);
+		assertThat(scheduleInfo, eventually(
+				hasSpecifiedSchedulesByTaskDefinitionName(taskScheduler().list(
+						PageRequest.of(0,1), definitionName+0).getContent(),
+						scheduleInfo.getTaskDefinitionName(), 1),
+				this.scheduleTimeout.maxAttempts, this.scheduleTimeout.pause));
+	}
+
 	public Timeout getScheduleTimeout() {
-		return scheduleTimeout;
+		return this.scheduleTimeout;
 	}
 
 	public void setScheduleTimeout(Timeout scheduleTimeout) {
@@ -443,6 +484,19 @@ public abstract class AbstractIntegrationTests {
 		public Map<String, ScheduleRequest> getScheduledTasks() {
 			return  Collections.unmodifiableMap(scheduledTasks);
 		}
+
+		@Override
+		public Page<ScheduleInfo> list(Pageable pageable) {
+			List<ScheduleInfo> list = this.wrapped.list();
+			return new PageImpl<>(list, pageable, LIST_SIZE);
+		}
+
+		@Override
+		public Page<ScheduleInfo> list(Pageable pageable, String taskDefinitionName) {
+			Page<ScheduleInfo> list = this.wrapped.list(pageable, taskDefinitionName);
+			return new PageImpl<>(list.getContent(), pageable, list.getContent().size());
+		}
+
 	}
 
 	@Configuration
