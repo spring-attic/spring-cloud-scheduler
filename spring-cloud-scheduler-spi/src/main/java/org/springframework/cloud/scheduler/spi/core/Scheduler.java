@@ -20,6 +20,8 @@ package org.springframework.cloud.scheduler.spi.core;
 import java.util.List;
 
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * A {@code Scheduler} is a component that provides a way to register the execution of a
@@ -68,5 +70,26 @@ public interface Scheduler {
 	 * @return A List of {@link ScheduleInfo}s for the given system.
 	 */
 	List<ScheduleInfo> list();
+
+	/**
+	 * List all of the {@link ScheduleInfo}s registered with the system.
+	 * If an error occurs during list generation then a {@link SchedulerException}
+	 * should be thrown.
+	 *
+	 * @param pageable the constraints for the search.
+	 * @return page containing the results from the search.
+	 */
+	Page<ScheduleInfo> list(Pageable pageable);
+
+	/**
+	 * List all of the {@link ScheduleInfo}s registered with the system.
+	 * If an error occurs during list generation then a {@link SchedulerException}
+	 * should be thrown.
+	 *
+	 * @param pageable the constraints for the search
+	 * @param taskDefinitionName to retrieve {@link ScheduleInfo}s for a specified taskDefinitionName.
+	 * @return page containing the results from the search.
+	 */
+	Page<ScheduleInfo> list(Pageable pageable, String taskDefinitionName);
 }
 
