@@ -22,6 +22,9 @@ package org.springframework.cloud.scheduler.spi.core;
  * @author Glenn Renfro
  */
 public class UnScheduleException extends SchedulerException {
+	public UnScheduleException(String scheduleName) {
+		super(String.format("Failed to unschedule %s", scheduleName));
+	}
 
 	public UnScheduleException(String scheduleName, Throwable t) {
 		super(String.format("Failed to unschedule %s", scheduleName), t);
