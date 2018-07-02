@@ -184,7 +184,7 @@ public abstract class AbstractIntegrationTests {
 		String scheduleName = "ScheduleName_" + definitionName;
 
 		this.expectedException.expect(SchedulerException.class);
-		this.expectedException.expectMessage(String.format("Failed to unschedule, schedule %s does not exist.",
+		this.expectedException.expectMessage(String.format("Failed to unschedule schedule %s does not exist.",
 				scheduleName));
 		unscheduleTestSchedule(scheduleName);
 	}

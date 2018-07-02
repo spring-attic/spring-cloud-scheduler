@@ -33,6 +33,6 @@ public class SchedulerPropertyKeys {
 	/**
 	 * Scheduler cron expression property key.
 	 */
-	public static final String CRON_EXPRESSION = PREFIX + "expression";
+	public static final String CRON_EXPRESSION = CRON_PREFIX + "expression";
 
 }
