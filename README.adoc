@@ -1,8 +1,32 @@
-== Spring Cloud Scheduler image:https://build.spring.io/plugins/servlet/wittified/build-status/SCD-SCHED[Build Status, link=https://build.spring.io/browse/SCD-SCHED] image:https://badge.waffle.io/spring-cloud/spring-cloud-scheduler.svg?label=ready&title=Ready[Stories Ready, link=http://waffle.io/spring-cloud/spring-cloud-scheduler] image:https://badge.waffle.io/spring-cloud/spring-cloud-scheduler.svg?label=In%20Progress&title=In%20Progress[Stories In Progress, link=http://waffle.io/spring-cloud/spring-cloud-scheduler]
+//:image-root: https://raw.githubusercontent.com/spring-cloud/spring-cloud-scheduler/master/images
+
+= Spring Cloud Scheduler
 
 The Spring Cloud Scheduler project defines an SPI for scheduling short lived tasks.
 
-=== Building
+== Overview
+This project offers an interface that abstracts the common functionality
+for scheduling ephemeral applications on cloud platforms using their native scheduler (Pivotal Cloud Foundry Scheduler, Kubernetes Cron Job).
+With the Spring Cloud Scheduler SPI you can implement an application scheduler that will be able to schedule applications for launch by a native scheduler via cron expressions.
+While the application that implements the SPI can also house the native scheduler it is best to take advantage of the cloud native offerings that are out there (Pivotal Cloud Foundry Scheduler, Kubernetes CronJobs).
+A basic architecture is shown below:
+
+image::{image-root}/basicarchitecture.png[Architecture]
+
+== Components
+
+The https://github.com/spring-cloud/spring-cloud-scheduler/tree/master/spring-cloud-scheduler-spi[SPI] project
+defines the core interfaces, that create, delete and list schedules.
+
+The https://github.com/spring-cloud/spring-cloud-scheduler/tree/master/spring-cloud-scheduler-spi-test[SPI Test] project provides
+the basic test framework that any SPI implementation should use to verify its functionality.
+
+== Implementations
+
+This scheduler SPI has been implemented  https://github.com/spring-cloud/spring-cloud-scheduler-cloudfoundry[Cloud Foundry].
+
+
+== Building
 
 Clone the repo and type
 
