@@ -6,12 +6,8 @@ The Spring Cloud Scheduler project defines an SPI for scheduling short lived tas
 
 == Overview
 This project offers an interface that abstracts the common functionality
-for scheduling ephemeral applications on cloud platforms using their native scheduler (Pivotal Cloud Foundry Scheduler, Kubernetes Cron Job).
+for scheduling ephemeral applications on cloud platforms by using their native schedulers, such as Pivotal Cloud Foundry Scheduler and Kubernetes Cron Job, to schedule applications in Pivotal Cloud Foundry and Kubernetes, respectively.
 With the Spring Cloud Scheduler SPI you can implement an application scheduler that will be able to schedule applications for launch by a native scheduler via cron expressions.
-While the application that implements the SPI can also house the native scheduler it is best to take advantage of the cloud native offerings that are out there (Pivotal Cloud Foundry Scheduler, Kubernetes CronJobs).
-A basic architecture is shown below:
-
-image::{image-root}/basicarchitecture.png[Architecture]
 
 == Components
 
@@ -24,6 +20,10 @@ the basic test framework that any SPI implementation should use to verify its fu
 == Implementations
 
 This scheduler SPI has been implemented  https://github.com/spring-cloud/spring-cloud-scheduler-cloudfoundry[Cloud Foundry].
+
+The following image shows a basic architecture of an implementation:
+
+image::{image-root}/basicarchitecture.png[Architecture]
 
 
 == Building
