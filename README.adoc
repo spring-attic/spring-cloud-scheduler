@@ -1,4 +1,4 @@
-//:image-root: https://raw.githubusercontent.com/spring-cloud/spring-cloud-scheduler/master/images
+:image-root: https://raw.githubusercontent.com/spring-cloud/spring-cloud-scheduler/master/images
 
 = Spring Cloud Scheduler
 
@@ -33,3 +33,4 @@ Clone the repo and type
 ----
 $ ./mvnw clean install
 ----
+
