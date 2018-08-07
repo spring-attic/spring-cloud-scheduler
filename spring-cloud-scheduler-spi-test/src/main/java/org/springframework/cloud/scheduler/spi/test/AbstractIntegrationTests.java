@@ -181,7 +181,7 @@ public abstract class AbstractIntegrationTests {
 	@Test
 	public void testUnScheduleNoEntry() {
 		String definitionName = randomName();
-		String scheduleName = "ScheduleName_" + definitionName;
+		String scheduleName = scheduleName() + definitionName;
 
 		this.expectedException.expect(SchedulerException.class);
 		this.expectedException.expectMessage(String.format("Failed to unschedule schedule %s does not exist.",
@@ -192,7 +192,7 @@ public abstract class AbstractIntegrationTests {
 	@Test
 	public void testMultipleSchedule() {
 		String definitionName = randomName();
-		String scheduleName = "Schedule_Name " + definitionName;
+		String scheduleName = scheduleName() + definitionName;
 		for (int i = 0; i < 4; i++) {
 			ScheduleRequest request = createScheduleRequest(scheduleName + i, definitionName + i);
 			taskScheduler().schedule(request);
@@ -207,7 +207,7 @@ public abstract class AbstractIntegrationTests {
 	@Test
 	public void testListFilter() {
 		String definitionName = randomName();
-		String scheduleName = "Schedule_Name " + definitionName;
+		String scheduleName = scheduleName() + definitionName;
 		for (int i = 0; i < 4; i++) {
 			ScheduleRequest request = createScheduleRequest(scheduleName + i, definitionName + i%2);
 			taskScheduler().schedule(request);
@@ -248,7 +248,7 @@ public abstract class AbstractIntegrationTests {
 
 	private ScheduleRequest createScheduleRequest() {
 		String definitionName = randomName();
-		String scheduleName = "ScheduleName_" + definitionName;
+		String scheduleName = scheduleName() + definitionName;
 		return createScheduleRequest(scheduleName, definitionName);
 	}
 
@@ -278,6 +278,10 @@ public abstract class AbstractIntegrationTests {
 
 	protected String randomName() {
 		return name.getMethodName() + "-" + UUID.randomUUID().toString();
+	}
+
+	protected String scheduleName() {
+		return "ScheduleName_";
 	}
 
 	/**
