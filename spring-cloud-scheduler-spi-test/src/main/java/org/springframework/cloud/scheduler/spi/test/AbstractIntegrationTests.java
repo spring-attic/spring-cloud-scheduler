@@ -49,6 +49,7 @@ import org.springframework.cloud.scheduler.spi.core.ScheduleInfo;
 import org.springframework.cloud.scheduler.spi.core.ScheduleRequest;
 import org.springframework.cloud.scheduler.spi.core.Scheduler;
 import org.springframework.cloud.scheduler.spi.core.SchedulerException;
+import org.springframework.cloud.scheduler.spi.core.SchedulerPropertyKeys;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -187,6 +188,20 @@ public abstract class AbstractIntegrationTests {
 		this.expectedException.expectMessage(String.format("Failed to unschedule schedule %s does not exist.",
 				scheduleName));
 		unscheduleTestSchedule(scheduleName);
+	}
+
+	@Test
+	public void testInvalidCronExpression() {
+		final String INVALID_EXPRESSION = "BAD";
+		String definitionName = randomName();
+		String scheduleName = scheduleName() + definitionName;
+		Map<String, String> properties = new HashMap<>(getSchedulerProperties());
+		properties.put(SchedulerPropertyKeys.CRON_EXPRESSION, INVALID_EXPRESSION);
+		AppDefinition definition = new AppDefinition(definitionName, properties);
+		ScheduleRequest request = new ScheduleRequest(definition, properties, getDeploymentProperties(), getCommandLineArgs(), scheduleName, testApplication());
+		this.expectedException.expect(CreateScheduleException.class);
+
+		taskScheduler().schedule(request);
 	}
 
 	@Test
