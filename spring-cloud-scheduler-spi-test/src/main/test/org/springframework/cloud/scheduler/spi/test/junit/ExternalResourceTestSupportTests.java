@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.springframework.cloud.scheduler.spi.implementation;
+package org.springframework.cloud.scheduler.spi.test.junit;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.Rule;
@@ -22,8 +22,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import org.springframework.cloud.scheduler.spi.junit.AbstractExternalResourceTestSupport;
 
 import static org.mockito.Mockito.mock;
 

@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.springframework.cloud.scheduler.spi.junit;
+package org.springframework.cloud.scheduler.spi.test.junit;
 
 import static org.junit.Assert.fail;
 
