@@ -21,7 +21,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<maven.version>3.5.0</maven.version>
-		<spring-cloud-deployer.version>2.0.3.RC1</spring-cloud-deployer.version>
+		<spring-cloud-deployer.version>2.0.3.RELEASE</spring-cloud-deployer.version>
 	</properties>
 
 	<modules>
