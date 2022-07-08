@@ -1,3 +1,5 @@
+# spring-cloud-scheduler is no longer actively maintained by VMware, Inc.
+
 :image-root: https://raw.githubusercontent.com/spring-cloud/spring-cloud-scheduler/master/images
 
 = Spring Cloud Scheduler
